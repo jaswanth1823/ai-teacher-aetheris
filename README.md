@@ -1,6 +1,14 @@
 # 🎓 Aetheris: Autonomous Multimodal AI Educator
 > **AI Innovation Hackathon 2026 — Round 2 Technical Assessment Submission**
-> *An adaptive, human-like AI educator that teaches through synchronized video, live smartboard drawing, and Socratic misconception remediation.*
+> *An adaptive, human-like AI educator that teaches through synchronized video, live smartboard drawing, 3D simulations, and Socratic misconception remediation.*
+
+---
+
+## 🌐 Live Production Deployment
+* 🚀 **Live Interactive Web App:** [https://ai-teacher-aetheris.vercel.app](https://ai-teacher-aetheris.vercel.app/)
+* ⚡ **Live Backend API (FastAPI):** [https://ai-teacher-aetheris.onrender.com](https://ai-teacher-aetheris.onrender.com)
+* 📖 **Interactive API Docs (Swagger):** [https://ai-teacher-aetheris.onrender.com/docs](https://ai-teacher-aetheris.onrender.com/docs)
+* 📦 **GitHub Repository:** [https://github.com/jaswanth1823/ai-teacher-aetheris](https://github.com/jaswanth1823/ai-teacher-aetheris)
 
 ---
 
