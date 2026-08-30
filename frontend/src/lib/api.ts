@@ -10,7 +10,7 @@ export interface LearnerProfile {
 }
 
 export interface BlackboardAction {
-  type: "latex" | "mermaid" | "code" | "diagram" | "bullet_points" | "clear";
+  type: "latex" | "mermaid" | "code" | "diagram" | "bullet_points" | "3d_simulation" | "clear";
   title: string;
   content: string;
   language?: string;
