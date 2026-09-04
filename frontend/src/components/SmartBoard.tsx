@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { BlackboardAction } from "@/lib/api";
 import { ThreeVisualizer } from "@/components/ThreeVisualizer";
-import { Sparkles, Terminal, Code2, Cpu, CheckCircle2, Box } from "lucide-react";
+import { Sparkles, Terminal, Code2, Cpu, CheckCircle2, Box, FunctionSquare } from "lucide-react";
 
 interface SmartBoardProps {
   action: BlackboardAction | null;
@@ -11,6 +11,87 @@ interface SmartBoardProps {
   currentBeat: number;
   totalBeats: number;
 }
+
+// Clean mathematical formula formatter
+function formatMathFallback(raw: string): string {
+  if (!raw) return "";
+  let clean = raw;
+  clean = clean.replace(/\\vec\{([^}]+)\}/g, "$1⃗");
+  clean = clean.replace(/\\text\{([^}]+)\}/g, "$1");
+  clean = clean.replace(/\\mathrm\{([^}]+)\}/g, "$1");
+  clean = clean.replace(/\\mathbf\{([^}]+)\}/g, "$1");
+  clean = clean.replace(/\\mathcal\{([^}]+)\}/g, "$1");
+  clean = clean.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1 / $2)");
+  clean = clean.replace(/\\xrightarrow\{([^}]+)\}/g, " ➔ $1 ➔ ");
+  clean = clean.replace(/\\rightarrow/g, " ➔ ");
+  clean = clean.replace(/\\Longleftrightarrow/g, " ⟺ ");
+  clean = clean.replace(/\\Longrightarrow/g, " ⟹ ");
+  clean = clean.replace(/\\implies/g, " ⟹ ");
+  clean = clean.replace(/\\cdot/g, " · ");
+  clean = clean.replace(/\\times/g, " × ");
+  clean = clean.replace(/\\propto/g, " ∝ ");
+  clean = clean.replace(/\\Delta/g, "Δ");
+  clean = clean.replace(/\\nabla/g, "∇");
+  clean = clean.replace(/\\sum/g, "∑");
+  clean = clean.replace(/\\int/g, "∫");
+  clean = clean.replace(/\\infty/g, "∞");
+  clean = clean.replace(/\\sigma/g, "σ");
+  clean = clean.replace(/\\partial/g, "∂");
+  clean = clean.replace(/\\lim_\{([^}]+)\}/g, "lim($1)");
+  clean = clean.replace(/\\quad/g, "   ");
+  clean = clean.replace(/\\,/g, " ");
+  clean = clean.replace(/\\;/g, " ");
+  clean = clean.replace(/\\!/g, "");
+  clean = clean.replace(/[\$\\]/g, "");
+  return clean.trim();
+}
+
+const FormulaDisplay: React.FC<{ formula: string }> = ({ formula }) => {
+  const [katexHtml, setKatexHtml] = useState<string>("");
+
+  useEffect(() => {
+    if (!formula) return;
+
+    const renderWithKaTeX = () => {
+      if (typeof window !== "undefined" && (window as any).katex) {
+        try {
+          const cleanRaw = formula.replace(/^\$+|\$+$/g, "").trim();
+          const html = (window as any).katex.renderToString(cleanRaw, {
+            throwOnError: false,
+            displayMode: true,
+          });
+          setKatexHtml(html);
+          return true;
+        } catch (e) {
+          console.warn("KaTeX parse error:", e);
+        }
+      }
+      return false;
+    };
+
+    if (!renderWithKaTeX()) {
+      // Retry once after 300ms if KaTeX script was still loading
+      const timer = setTimeout(renderWithKaTeX, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [formula]);
+
+  if (katexHtml) {
+    return (
+      <div
+        className="text-2xl md:text-3xl text-cyan-200 tracking-wide py-4 overflow-x-auto text-center"
+        dangerouslySetInnerHTML={{ __html: katexHtml }}
+      />
+    );
+  }
+
+  // Beautiful clean fallback
+  return (
+    <div className="text-2xl md:text-3xl font-serif text-cyan-200 tracking-wide py-4 overflow-x-auto text-center font-medium leading-relaxed">
+      {formatMathFallback(formula)}
+    </div>
+  );
+};
 
 export const SmartBoard: React.FC<SmartBoardProps> = ({
   action,
@@ -48,7 +129,13 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
             <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
           </div>
           <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded-md border border-cyan-800/40 flex items-center gap-1.5">
-            {action.type === "3d_simulation" ? <Box className="w-3.5 h-3.5 text-cyan-400" /> : <Sparkles className="w-3.5 h-3.5" />}
+            {action.type === "3d_simulation" ? (
+              <Box className="w-3.5 h-3.5 text-cyan-400" />
+            ) : action.type === "latex" ? (
+              <FunctionSquare className="w-3.5 h-3.5 text-cyan-400" />
+            ) : (
+              <Sparkles className="w-3.5 h-3.5" />
+            )}
             {action.type.toUpperCase()} MODE
           </span>
           <h2 className="text-sm font-medium text-slate-200 truncate max-w-xs md:max-w-md">
@@ -72,15 +159,18 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
 
         {/* LATEX EQUATION RENDERER */}
         {action.type === "latex" && (
-          <div className="w-full max-w-2xl bg-slate-900/90 border border-cyan-500/30 rounded-xl p-8 text-center shadow-lg shadow-cyan-500/5">
-            <div className="text-xs font-mono text-cyan-400 mb-4 tracking-wider uppercase">
+          <div className="w-full max-w-2xl bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-8 text-center shadow-xl shadow-cyan-500/5">
+            <div className="text-xs font-mono text-cyan-400 mb-4 tracking-wider uppercase flex items-center justify-center gap-1.5">
+              <FunctionSquare className="w-4 h-4 text-cyan-400" />
               Governing Mathematical Expression
             </div>
-            <div className="text-2xl md:text-3xl font-serif text-cyan-200 tracking-wide py-4 overflow-x-auto">
-              {renderedContent}
-            </div>
-            <div className="mt-4 text-xs text-slate-400 border-t border-slate-800 pt-3">
-              Standard Grounded Derivation
+
+            {/* Rendered Mathematical Formula */}
+            <FormulaDisplay formula={renderedContent} />
+
+            <div className="mt-4 text-xs font-mono text-slate-400 border-t border-slate-800/80 pt-3 flex items-center justify-between px-2">
+              <span>Standard Academic Derivation</span>
+              <span className="text-cyan-400/80">Active Mental Model</span>
             </div>
           </div>
         )}

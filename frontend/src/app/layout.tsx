@@ -15,6 +15,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossOrigin="anonymous" />
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossOrigin="anonymous" defer></script>
       </head>
       <body className="bg-background text-slate-100 antialiased min-h-screen">
         {children}
