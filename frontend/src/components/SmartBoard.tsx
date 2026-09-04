@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { BlackboardAction } from "@/lib/api";
 import { ThreeVisualizer } from "@/components/ThreeVisualizer";
+import { FormulaDisplay } from "@/components/FormulaDisplay";
 import { Sparkles, Terminal, Code2, Cpu, CheckCircle2, Box, FunctionSquare } from "lucide-react";
 
 interface SmartBoardProps {
@@ -11,87 +12,6 @@ interface SmartBoardProps {
   currentBeat: number;
   totalBeats: number;
 }
-
-// Clean mathematical formula formatter
-function formatMathFallback(raw: string): string {
-  if (!raw) return "";
-  let clean = raw;
-  clean = clean.replace(/\\vec\{([^}]+)\}/g, "$1⃗");
-  clean = clean.replace(/\\text\{([^}]+)\}/g, "$1");
-  clean = clean.replace(/\\mathrm\{([^}]+)\}/g, "$1");
-  clean = clean.replace(/\\mathbf\{([^}]+)\}/g, "$1");
-  clean = clean.replace(/\\mathcal\{([^}]+)\}/g, "$1");
-  clean = clean.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, "($1 / $2)");
-  clean = clean.replace(/\\xrightarrow\{([^}]+)\}/g, " ➔ $1 ➔ ");
-  clean = clean.replace(/\\rightarrow/g, " ➔ ");
-  clean = clean.replace(/\\Longleftrightarrow/g, " ⟺ ");
-  clean = clean.replace(/\\Longrightarrow/g, " ⟹ ");
-  clean = clean.replace(/\\implies/g, " ⟹ ");
-  clean = clean.replace(/\\cdot/g, " · ");
-  clean = clean.replace(/\\times/g, " × ");
-  clean = clean.replace(/\\propto/g, " ∝ ");
-  clean = clean.replace(/\\Delta/g, "Δ");
-  clean = clean.replace(/\\nabla/g, "∇");
-  clean = clean.replace(/\\sum/g, "∑");
-  clean = clean.replace(/\\int/g, "∫");
-  clean = clean.replace(/\\infty/g, "∞");
-  clean = clean.replace(/\\sigma/g, "σ");
-  clean = clean.replace(/\\partial/g, "∂");
-  clean = clean.replace(/\\lim_\{([^}]+)\}/g, "lim($1)");
-  clean = clean.replace(/\\quad/g, "   ");
-  clean = clean.replace(/\\,/g, " ");
-  clean = clean.replace(/\\;/g, " ");
-  clean = clean.replace(/\\!/g, "");
-  clean = clean.replace(/[\$\\]/g, "");
-  return clean.trim();
-}
-
-const FormulaDisplay: React.FC<{ formula: string }> = ({ formula }) => {
-  const [katexHtml, setKatexHtml] = useState<string>("");
-
-  useEffect(() => {
-    if (!formula) return;
-
-    const renderWithKaTeX = () => {
-      if (typeof window !== "undefined" && (window as any).katex) {
-        try {
-          const cleanRaw = formula.replace(/^\$+|\$+$/g, "").trim();
-          const html = (window as any).katex.renderToString(cleanRaw, {
-            throwOnError: false,
-            displayMode: true,
-          });
-          setKatexHtml(html);
-          return true;
-        } catch (e) {
-          console.warn("KaTeX parse error:", e);
-        }
-      }
-      return false;
-    };
-
-    if (!renderWithKaTeX()) {
-      // Retry once after 300ms if KaTeX script was still loading
-      const timer = setTimeout(renderWithKaTeX, 300);
-      return () => clearTimeout(timer);
-    }
-  }, [formula]);
-
-  if (katexHtml) {
-    return (
-      <div
-        className="text-2xl md:text-3xl text-cyan-200 tracking-wide py-4 overflow-x-auto text-center"
-        dangerouslySetInnerHTML={{ __html: katexHtml }}
-      />
-    );
-  }
-
-  // Beautiful clean fallback
-  return (
-    <div className="text-2xl md:text-3xl font-serif text-cyan-200 tracking-wide py-4 overflow-x-auto text-center font-medium leading-relaxed">
-      {formatMathFallback(formula)}
-    </div>
-  );
-};
 
 export const SmartBoard: React.FC<SmartBoardProps> = ({
   action,
@@ -108,9 +28,9 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
 
   if (!action) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-chalkboard chalkboard-grid rounded-2xl border border-slate-800 p-8 text-center text-slate-400">
+      <div className="h-full flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-2xl rounded-3xl border border-white/10 p-8 text-center text-slate-400 shadow-2xl">
         <Cpu className="w-16 h-16 text-cyan-400/40 mb-4 animate-pulse" />
-        <h3 className="text-xl font-semibold text-slate-200">Interactive Digital Blackboard</h3>
+        <h3 className="text-xl font-semibold text-slate-200">Interactive Spatial Blackboard</h3>
         <p className="text-sm text-slate-400 max-w-md mt-2">
           Ready to synthesize live formulas, interactive 3D simulations, Mermaid diagrams, and code demonstrations.
         </p>
@@ -119,16 +39,16 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
   }
 
   return (
-    <div className="h-full flex flex-col bg-chalkboard chalkboard-grid rounded-2xl border border-cyan-950/60 shadow-2xl overflow-hidden relative">
+    <div className="h-full flex flex-col bg-slate-950/85 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative">
       {/* Header bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-slate-900/80 border-b border-slate-800 backdrop-blur-md">
+      <div className="flex items-center justify-between px-6 py-4 bg-slate-900/60 border-b border-white/5 backdrop-blur-xl">
         <div className="flex items-center space-x-3">
           <div className="flex space-x-1.5">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
             <div className="w-3 h-3 rounded-full bg-amber-500/80" />
             <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
           </div>
-          <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded-md border border-cyan-800/40 flex items-center gap-1.5">
+          <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-3 py-1 rounded-full border border-cyan-500/30 flex items-center gap-1.5 shadow-sm shadow-cyan-500/20">
             {action.type === "3d_simulation" ? (
               <Box className="w-3.5 h-3.5 text-cyan-400" />
             ) : action.type === "latex" ? (
@@ -143,7 +63,7 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
           </h2>
         </div>
 
-        <div className="text-xs font-mono text-slate-400 bg-slate-800/80 px-3 py-1 rounded-full">
+        <div className="text-xs font-mono text-slate-400 bg-slate-800/80 px-3.5 py-1 rounded-full border border-white/5">
           Beat {currentBeat} of {totalBeats}
         </div>
       </div>
@@ -159,16 +79,19 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
 
         {/* LATEX EQUATION RENDERER */}
         {action.type === "latex" && (
-          <div className="w-full max-w-2xl bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-8 text-center shadow-xl shadow-cyan-500/5">
+          <div className="w-full max-w-2xl bg-gradient-to-b from-slate-900/90 to-slate-950/95 border border-cyan-500/30 rounded-3xl p-8 text-center shadow-2xl shadow-cyan-500/5 backdrop-blur-xl relative overflow-hidden">
+            {/* Ambient specular highlight */}
+            <div className="absolute top-0 left-1/4 right-1/4 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent" />
+
             <div className="text-xs font-mono text-cyan-400 mb-4 tracking-wider uppercase flex items-center justify-center gap-1.5">
               <FunctionSquare className="w-4 h-4 text-cyan-400" />
               Governing Mathematical Expression
             </div>
 
-            {/* Rendered Mathematical Formula */}
+            {/* High-Fidelity Typography Render */}
             <FormulaDisplay formula={renderedContent} />
 
-            <div className="mt-4 text-xs font-mono text-slate-400 border-t border-slate-800/80 pt-3 flex items-center justify-between px-2">
+            <div className="mt-6 text-xs font-mono text-slate-400 border-t border-white/10 pt-3.5 flex items-center justify-between px-2">
               <span>Standard Academic Derivation</span>
               <span className="text-cyan-400/80">Active Mental Model</span>
             </div>
@@ -177,7 +100,7 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
 
         {/* CODE DEMONSTRATION RENDERER */}
         {action.type === "code" && (
-          <div className="w-full max-w-3xl bg-slate-950 border border-purple-500/30 rounded-xl overflow-hidden shadow-2xl">
+          <div className="w-full max-w-3xl bg-slate-950/90 border border-purple-500/30 rounded-2xl overflow-hidden shadow-2xl">
             <div className="flex items-center justify-between px-4 py-2 bg-slate-900 border-b border-slate-800 text-xs font-mono text-purple-300">
               <span className="flex items-center gap-1.5">
                 <Code2 className="w-4 h-4 text-purple-400" />
@@ -204,11 +127,11 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
 
         {/* MERMAID / DIAGRAM RENDERER */}
         {(action.type === "mermaid" || action.type === "diagram") && (
-          <div className="w-full max-w-2xl bg-slate-900/90 border border-emerald-500/30 rounded-xl p-8 shadow-xl">
+          <div className="w-full max-w-2xl bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-8 shadow-xl">
             <div className="text-xs font-mono text-emerald-400 mb-4 text-center tracking-wider uppercase">
               System Dynamics & Conceptual Flow
             </div>
-            <div className="bg-slate-950 p-6 rounded-lg border border-slate-800 flex flex-col items-center justify-center text-slate-200 font-mono text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 flex flex-col items-center justify-center text-slate-200 font-mono text-sm leading-relaxed whitespace-pre-wrap">
               {renderedContent}
             </div>
           </div>
@@ -216,7 +139,7 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
 
         {/* BULLET POINTS & SYNTHESIS RENDERER */}
         {action.type === "bullet_points" && (
-          <div className="w-full max-w-2xl bg-slate-900/90 border border-amber-500/30 rounded-xl p-8 shadow-xl">
+          <div className="w-full max-w-2xl bg-slate-900/90 border border-amber-500/30 rounded-2xl p-8 shadow-xl">
             <div className="text-xs font-mono text-amber-400 mb-4 tracking-wider uppercase">
               Core Principles & Observations
             </div>
@@ -228,8 +151,8 @@ export const SmartBoard: React.FC<SmartBoardProps> = ({
       </div>
 
       {/* Footer Branding */}
-      <div className="px-6 py-2.5 bg-slate-950/80 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500 font-mono">
-        <span>Aetheris 3D Cognitive Canvas</span>
+      <div className="px-6 py-3 bg-slate-950/90 border-t border-white/5 flex items-center justify-between text-xs text-slate-500 font-mono">
+        <span>Aetheris 3D Spatial Canvas</span>
         <span className="text-cyan-400/80">WebGL Multi-Layer Rendering</span>
       </div>
     </div>
