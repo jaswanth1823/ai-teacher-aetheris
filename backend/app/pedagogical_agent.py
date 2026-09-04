@@ -140,12 +140,15 @@ class PedagogicalAgent:
         prompt = f"""
 You are AETHERIS, an expert human teacher conducting a synchronized video lecture.
 Topic: {topic}
-Learner Level: {profile.level} (Beginner: simple analogies, Intermediate: mechanics & logic, Advanced: rigorous math/code)
-Available Time: {profile.available_time_minutes} minutes ({target_beats} core beats)
-Teaching Language: {profile.language} (If Hinglish: write spoken text in conversational Hindi-English mix e.g., 'Aaj hum dekhenge ki...').
+Learner Level: {profile.level} (Beginner: simple intuitive analogies, Intermediate: mechanics & logic, Advanced: rigorous math/code)
+Available Time: {profile.available_time_minutes} minutes
+Target Beats Count: {target_beats}
+Teaching Language: {profile.language} (If Hinglish: write spoken_text in natural conversational Hindi-English mix e.g., 'Namaste dosto! Aaj hum...').
 
 Context Material:
-{context[:2000]}
+{context[:2500]}
+
+Assigned 3D Simulation: '{sim_type}' (Title: '{sim_title}')
 
 Generate a valid JSON object matching this schema:
 {{
@@ -153,17 +156,17 @@ Generate a valid JSON object matching this schema:
   "total_duration_minutes": {profile.available_time_minutes},
   "target_level": "{profile.level}",
   "language": "{profile.language}",
-  "summary": "Brief 2-sentence pedagogical roadmap on {topic}",
+  "summary": "2-sentence pedagogical roadmap on {topic}",
   "beats": [
     {{
       "beat_id": 1,
       "timestamp_sec": 0.0,
-      "spoken_text": "Engaging conversational spoken intro explaining {topic}",
+      "spoken_text": "Engaging conversational spoken intro explaining {topic} in {profile.language}",
       "avatar_emotion": "welcoming",
       "avatar_gesture": "pointing_board",
       "board_action": {{
         "type": "latex" | "bullet_points",
-        "title": "Core Formula or Principles of {topic}",
+        "title": "Governing Principle: {topic}",
         "content": "Specific mathematical equation or key definitions of {topic}"
       }},
       "is_checkpoint": false,
@@ -171,8 +174,8 @@ Generate a valid JSON object matching this schema:
     }},
     {{
       "beat_id": 2,
-      "timestamp_sec": 20.0,
-      "spoken_text": "Spoken explanation guiding student to observe the live 3D visual simulation",
+      "timestamp_sec": 25.0,
+      "spoken_text": "Spoken explanation guiding student to observe and interact with the 3D model",
       "avatar_emotion": "explaining",
       "avatar_gesture": "sketching",
       "board_action": {{
@@ -185,7 +188,7 @@ Generate a valid JSON object matching this schema:
     }},
     {{
       "beat_id": 3,
-      "timestamp_sec": 45.0,
+      "timestamp_sec": 50.0,
       "spoken_text": "Socratic question testing conceptual understanding of {topic}",
       "avatar_emotion": "questioning",
       "avatar_gesture": "hand_open",
@@ -196,22 +199,50 @@ Generate a valid JSON object matching this schema:
       }},
       "is_checkpoint": true,
       "question": {{
-        "question_id": "q_{topic[:6].lower()}_01",
+        "question_id": "q_{topic[:6].lower().replace(' ', '_')}_01",
         "question_type": "conceptual_mcq",
         "prompt": "Thought-provoking multiple-choice question directly on {topic}?",
         "options": [
           "A) Accurate core principle option",
           "B) Common misconception option",
-          "C) Distractor option",
+          "C) Plausible distractor option",
           "D) Irrelevant distractor"
         ],
         "expected_concept": "Exact underlying concept tested in {topic}",
         "hints": ["Helpful pedagogical hint"]
       }}
+    }},
+    {{
+      "beat_id": 4,
+      "timestamp_sec": 80.0,
+      "spoken_text": "Practical real-world application, workflow diagram or code demonstration for {topic}",
+      "avatar_emotion": "explaining",
+      "avatar_gesture": "pointing_board",
+      "board_action": {{
+        "type": "mermaid" | "code" | "latex" | "bullet_points",
+        "title": "Applied Dynamics / Flow / Code",
+        "content": "Mermaid diagram code, executable code snippet, or equation"
+      }},
+      "is_checkpoint": false,
+      "question": null
+    }},
+    {{
+      "beat_id": 5,
+      "timestamp_sec": 110.0,
+      "spoken_text": "Encouraging summary and mastery recap for {topic} in {profile.language}",
+      "avatar_emotion": "celebrating",
+      "avatar_gesture": "nodding",
+      "board_action": {{
+        "type": "bullet_points",
+        "title": "Mastery Summary: {topic}",
+        "content": "✓ Key principles mastered\\n✓ 3D Spatial structure verified\\n✓ Socratic reasoning validated"
+      }},
+      "is_checkpoint": false,
+      "question": null
     }}
   ]
 }}
-Ensure the Socratic question in beat 3 is specifically about {topic}.
+Ensure EVERY beat is completely tailored and accurate to {topic}. If {target_beats} is 3, return 3 beats (Beat 1, 2, 3). If {target_beats} >= 5, return 5 beats.
 Return ONLY valid JSON.
 """
         response = self.model.generate_content(prompt)

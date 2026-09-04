@@ -189,6 +189,8 @@ class StudentResponsePayload(BaseModel):
     beat_id: int
     question_id: str
     student_answer: str
+    question_prompt: Optional[str] = None
+    expected_concept: Optional[str] = None
     audio_base64: Optional[str] = None
     language: str = "English"
 

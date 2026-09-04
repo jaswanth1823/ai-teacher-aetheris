@@ -62,6 +62,8 @@ export const SocraticModal: React.FC<SocraticModalProps> = ({
         beat_id: beatId,
         question_id: question.question_id,
         student_answer: finalAnswer,
+        question_prompt: question.prompt,
+        expected_concept: question.expected_concept,
         language: language,
       });
       setAnalysis(result);

@@ -40,6 +40,8 @@ class MisconceptionDiagnoser:
         answer = payload.student_answer.strip()
         lang = payload.language
         is_hinglish = any(k in lang.lower() for k in ["hinglish", "hindi"])
+        target_concept = payload.expected_concept or expected_concept
+        q_prompt = payload.question_prompt or payload.question_id
 
         # 1. If Gemini is available, perform intelligent dynamic diagnosis
         if self.has_gemini:
@@ -47,9 +49,9 @@ class MisconceptionDiagnoser:
                 prompt = f"""
 You are an expert pedagogical diagnoser evaluating a student's answer.
 Language: {lang} (If Hinglish, write explanation in natural conversational Hinglish mix).
-Question ID: {payload.question_id}
+Question: "{q_prompt}"
+Target Canonical Concept: "{target_concept}"
 Student Answer: "{answer}"
-Target Canonical Concept: "{expected_concept}"
 
 Evaluate whether the student's answer is conceptually correct.
 Return a valid JSON object with:

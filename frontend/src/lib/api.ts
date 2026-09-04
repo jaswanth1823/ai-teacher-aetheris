@@ -122,6 +122,8 @@ export async function evaluateResponse(payload: {
   beat_id: number;
   question_id: string;
   student_answer: string;
+  question_prompt?: string;
+  expected_concept?: string;
   language?: string;
 }): Promise<MisconceptionAnalysis> {
   const res = await fetch(`${API_BASE_URL}/api/evaluate-response`, {
