@@ -188,6 +188,7 @@ export default function ClassroomPage() {
                   emotion={currentBeat.avatar_emotion}
                   gesture={currentBeat.avatar_gesture}
                   audioBase64={audioUrl}
+                  language={lessonPlan.language}
                   isPlaying={isPlaying}
                   onAudioEnded={() => setIsPlaying(false)}
                 />

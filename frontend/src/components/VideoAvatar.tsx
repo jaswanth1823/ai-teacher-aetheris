@@ -9,6 +9,7 @@ interface VideoAvatarProps {
   emotion: string;
   gesture: string;
   audioBase64?: string;
+  language?: string;
   isPlaying: boolean;
   onAudioEnded?: () => void;
 }
@@ -18,6 +19,7 @@ export const VideoAvatar: React.FC<VideoAvatarProps> = ({
   emotion,
   gesture,
   audioBase64,
+  language = "English",
   isPlaying,
   onAudioEnded,
 }) => {
@@ -26,13 +28,60 @@ export const VideoAvatar: React.FC<VideoAvatarProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    if (isMuted || !spokenText) return;
+
+    // 1. If high-fidelity MP3 base64 audio is available from Edge-TTS, play it
     if (audioBase64 && audioRef.current) {
       audioRef.current.src = audioBase64;
       if (isPlaying) {
-        audioRef.current.play().catch((e) => console.log("Audio autoplay prevented:", e));
+        audioRef.current.play().catch(() => {});
       }
+      return;
     }
-  }, [audioBase64, isPlaying]);
+
+    // 2. Instant Zero-Latency Browser Web Speech Synthesis Fallback
+    if (typeof window !== "undefined" && "speechSynthesis" in window && isPlaying) {
+      window.speechSynthesis.cancel(); // Stop any pending speech
+
+      const cleanText = spokenText.replace(/[\$\*\#\_\\\[\]]/g, "").trim();
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+
+      // Select natural voice / locale
+      const langLower = language.toLowerCase();
+      if (langLower.includes("hindi") || langLower.includes("hinglish")) {
+        utterance.lang = "hi-IN";
+      } else if (langLower.includes("tamil")) {
+        utterance.lang = "ta-IN";
+      } else if (langLower.includes("spanish")) {
+        utterance.lang = "es-ES";
+      } else if (langLower.includes("french")) {
+        utterance.lang = "fr-FR";
+      } else if (langLower.includes("german")) {
+        utterance.lang = "de-DE";
+      } else {
+        utterance.lang = "en-US";
+      }
+
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      utterance.onend = () => {
+        if (onAudioEnded) onAudioEnded();
+      };
+
+      utterance.onerror = () => {
+        if (onAudioEnded) onAudioEnded();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [audioBase64, spokenText, isPlaying, isMuted, language]);
 
   const emotionColors: Record<string, string> = {
     welcoming: "border-cyan-400 bg-cyan-950/40 text-cyan-300",
@@ -77,7 +126,12 @@ export const VideoAvatar: React.FC<VideoAvatarProps> = ({
           </span>
 
           <button
-            onClick={() => setIsMuted(!isMuted)}
+            onClick={() => {
+              setIsMuted(!isMuted);
+              if (!isMuted && typeof window !== "undefined" && "speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+              }
+            }}
             className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition"
           >
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
