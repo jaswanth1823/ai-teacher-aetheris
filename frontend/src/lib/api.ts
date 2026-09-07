@@ -88,7 +88,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "dna_helix",
       title: "3D DNA & Cellular Genetics Model",
-      latex: r"\text{DNA} \xrightarrow{\text{Transcription}} \text{mRNA} \xrightarrow{\text{Translation}} \text{Protein}",
+      latex: "\\text{DNA} \\xrightarrow{\\text{Transcription}} \\text{mRNA} \\xrightarrow{\\text{Translation}} \\text{Protein}",
       qPrompt: `In ${topic}, what is the fundamental role of nucleotide base-pairing in genetic replication?`,
       qOptions: [
         "A) To ensure high-fidelity template replication and protein synthesis",
@@ -104,7 +104,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "solar_system",
       title: "3D Heliocentric Gravitational Orbits",
-      latex: r"F_g = G \frac{m_1 m_2}{r^2} \quad \text{and} \quad v_{\text{orbit}} = \sqrt{\frac{G M}{r}}",
+      latex: "F_g = G \\frac{m_1 m_2}{r^2} \\quad \\text{and} \\quad v_{\\text{orbit}} = \\sqrt{\\frac{G M}{r}}",
       qPrompt: `In planetary orbital mechanics, what happens to gravitational attraction if distance between two celestial bodies is doubled?`,
       qOptions: [
         "A) Gravitational force is reduced to 1/4th (Inverse-Square Law)",
@@ -112,7 +112,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
         "C) Gravitational force remains completely unchanged",
         "D) Orbital velocity immediately drops to zero"
       ],
-      qConcept: "Inverse-Square Law of Universal Gravitation ($F \\propto 1/r^2$)"
+      qConcept: "Inverse-Square Law of Universal Gravitation (F proportional to 1/r^2)"
     };
   }
 
@@ -120,7 +120,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "solar_system",
       title: "3D Force Vector & Dynamic Mechanics",
-      latex: r"\vec{F}_{\text{net}} = m \cdot \vec{a} \quad \Longleftrightarrow \quad \vec{a} = \frac{\vec{F}_{\text{net}}}{m}",
+      latex: "\\vec{F}_{\\text{net}} = m \\cdot \\vec{a} \\quad \\Longleftrightarrow \\quad \\vec{a} = \\frac{\\vec{F}_{\\text{net}}}{m}",
       qPrompt: `According to Newton's Laws, if net force on an object is doubled while mass remains constant, what happens to acceleration?`,
       qOptions: [
         "A) Acceleration doubles proportionally (a = F / m)",
@@ -128,7 +128,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
         "C) Acceleration remains constant",
         "D) Velocity becomes permanently zero"
       ],
-      qConcept: "Direct proportionality between Net Force and Acceleration ($a \\propto F$)"
+      qConcept: "Direct proportionality between Net Force and Acceleration (a proportional to F)"
     };
   }
 
@@ -136,7 +136,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "physics_circuit",
       title: "3D Hydraulic Charge & Flow Circuit",
-      latex: r"V = I \times R \quad \Longleftrightarrow \quad I = \frac{V}{R}",
+      latex: "V = I \\times R \\quad \\Longleftrightarrow \\quad I = \\frac{V}{R}",
       qPrompt: "If Resistance is doubled while Voltage remains constant, what happens to Current?",
       qOptions: [
         "A) Current is halved (inversely proportional)",
@@ -144,7 +144,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
         "C) Current remains unchanged",
         "D) Voltage automatically drops to zero"
       ],
-      qConcept: "Current is inversely proportional to Resistance ($I = V/R$)"
+      qConcept: "Current is inversely proportional to Resistance (I = V/R)"
     };
   }
 
@@ -152,7 +152,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "chemistry_molecule",
       title: "3D Covalent Molecular Geometry",
-      latex: r"\Delta G = \Delta H - T \Delta S < 0 \quad \text{and} \quad \text{pH} = -\log_{10}[\text{H}^+]",
+      latex: "\\Delta G = \\Delta H - T \\Delta S < 0 \\quad \\text{and} \\quad \\text{pH} = -\\log_{10}[\\text{H}^+]",
       qPrompt: `What is the driving thermodynamic factor behind chemical bond formation in ${topic}?`,
       qOptions: [
         "A) Minimizing free energy and achieving a stable valence electron octet",
@@ -168,7 +168,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "binary_tree",
       title: "3D Hierarchical Algorithm & DOM Tree",
-      latex: r"T(n) = 2T(n/2) + \mathcal{O}(n) \implies \mathcal{O}(n \log n)",
+      latex: "T(n) = 2T(n/2) + \\mathcal{O}(n) \\implies \\mathcal{O}(n \\log n)",
       qPrompt: `In ${topic}, what is the primary benefit of hierarchical tree structures and unidirectional state?`,
       qOptions: [
         "A) Logarithmic time complexity and deterministic, predictable rendering",
@@ -184,7 +184,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
     return {
       type: "neural_network",
       title: "3D Deep Neural Network Synapses",
-      latex: r"\hat{y} = \sigma\left(\sum_{i=1}^n w_i x_i + b\right) \quad \text{and} \quad \mathcal{L} = -\sum y \log(\hat{y})",
+      latex: "\\hat{y} = \\sigma\\left(\\sum_{i=1}^n w_i x_i + b\\right) \\quad \\text{and} \\quad \\mathcal{L} = -\\sum y \\log(\\hat{y})",
       qPrompt: `During forward and backward propagation in ${topic}, how are synaptic weights optimized?`,
       qOptions: [
         "A) By computing loss gradients with respect to weights via backpropagation",
@@ -200,7 +200,7 @@ function resolveInstant3DModel(topic: string): { type: string; title: string; la
   return {
     type: "math_surface",
     title: `3D Dynamic Surface Model: ${topic}`,
-    latex: r"\frac{d}{dx}[f(x)] = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} \quad \text{and} \quad \nabla f = \left[\frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}\right]",
+    latex: "\\frac{d}{dx}[f(x)] = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h} \\quad \\text{and} \\quad \\nabla f = \\left[\\frac{\\partial f}{\\partial x}, \\frac{\\partial f}{\\partial y}\\right]",
     qPrompt: `In ${topic}, what fundamentally characterizes the relationship between the system inputs and transformed outputs?`,
     qOptions: [
       "A) Governing equilibrium, conservation laws, and rate of change",
