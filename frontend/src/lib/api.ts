@@ -1,4 +1,8 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window !== "undefined" && window.location.hostname !== "localhost"
+    ? "https://ai-teacher-aetheris.onrender.com"
+    : "http://localhost:8000");
 
 export interface LearnerProfile {
   level: "Beginner" | "Intermediate" | "Advanced";
@@ -340,27 +344,29 @@ export async function generateLesson(payload: {
 }): Promise<LessonPlanResponse> {
   const targetTopic = payload.topic || "Fundamental Concepts";
 
-  // Attempt backend with a 3.5-second timeout
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 3500);
+  // If a custom document was uploaded, attempt grounded RAG from backend
+  if (payload.doc_id) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/generate-lesson`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/generate-lesson`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
 
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      return await res.json();
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (err) {
+      console.log("RAG backend timeout, using instant synthesis:", err);
     }
-  } catch (err) {
-    console.log("Backend cold-start / timeout, generating instant client-side lesson:", err);
   }
 
-  // Fast-track instant response (0 waiting time for the student)
+  // Instant Zero-Delay Response (< 10ms) for all direct topics
   return buildInstantLesson(targetTopic, payload.profile);
 }
 
